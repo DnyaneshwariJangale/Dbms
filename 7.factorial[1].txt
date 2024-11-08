@@ -1,0 +1,33 @@
+SQL>SET SERVEROUTPUT ON;
+SQL>DECLARE
+    num NUMBER;
+    result NUMBER := 1;
+    i NUMBER;
+    negative_input EXCEPTION;
+
+BEGIN
+    -- Taking user input
+    num := &num;  -- Prompting user to enter a number
+
+    -- Check for negative input and raise exception if true
+    IF num < 0 THEN
+        RAISE negative_input;
+    END IF;
+
+    -- Calculate factorial
+    FOR i IN REVERSE 1..num LOOP
+        result := result * i;
+    END LOOP;
+
+    -- Display result
+    DBMS_OUTPUT.PUT_LINE('Factorial of ' || num || ' is: ' || result);
+
+-- Exception handling
+EXCEPTION
+    WHEN negative_input THEN
+        DBMS_OUTPUT.PUT_LINE('Error: Factorial is not defined for negative numbers.');
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An unexpected error occurred.');
+
+END;
+/

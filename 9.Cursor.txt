@@ -1,0 +1,167 @@
+
+SQL> -- Create tables
+SQL> CREATE TABLE N_RollCall (
+       student_id NUMBER PRIMARY KEY,
+       student_name VARCHAR2(50),
+        attendance NUMBER
+   );
+
+Table created.
+
+SQL> 
+SQL> CREATE TABLE O_RollCall (
+        student_id NUMBER PRIMARY KEY,
+       student_name VARCHAR2(50),
+       attendance NUMBER
+    );
+
+Table created.
+
+SQL> 
+SQL> -- Insert data into N_RollCall
+SQL> INSERT INTO N_RollCall VALUES (1, 'Ajay', 85);
+
+1 row created.
+
+SQL> INSERT INTO N_RollCall VALUES (2, 'Ramesh', 90);
+
+1 row created.
+
+SQL> INSERT INTO N_RollCall VALUES (3, 'Umesh', 75);
+
+1 row created.
+
+SQL> INSERT INTO N_RollCall VALUES (4, 'Ram', 80);
+
+1 row created.
+
+SQL> 
+SQL> -- Insert data into O_RollCall
+SQL> INSERT INTO O_RollCall VALUES (2, 'Ramesh', 90);
+
+1 row created.
+
+SQL> INSERT INTO O_RollCall VALUES (5, 'Sunil', 70);
+
+1 row created.
+
+SQL> 
+SQL> COMMIT;
+
+Commit complete.
+
+SQL> SET SERVEROUTPUT ON;
+SQL> DECLARE
+        avg_attendance NUMBER;
+    BEGIN
+        -- Implicit cursor is used here with the aggregate function AVG
+        SELECT AVG(attendance) INTO avg_attendance FROM N_RollCall;
+        DBMS_OUTPUT.PUT_LINE('Average Attendance: ' || avg_attendance);
+    END;
+    /
+Average Attendance: 82.5
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> SET SERVEROUTPUT ON;
+SQL> DECLARE
+        CURSOR student_cursor IS
+            SELECT student_id, student_name, attendance
+            FROM N_RollCall
+            WHERE attendance > 80;
+    
+        student_id N_RollCall.student_id%TYPE;
+        student_name N_RollCall.student_name%TYPE;
+        attendance N_RollCall.attendance%TYPE;
+   BEGIN
+       OPEN student_cursor;
+       LOOP
+           FETCH student_cursor INTO student_id, student_name, attendance;
+           EXIT WHEN student_cursor%NOTFOUND;
+           DBMS_OUTPUT.PUT_LINE('ID: ' || student_id || ', Name: ' || student_name || ', Attendance: ' || attendance);
+       END LOOP;
+       CLOSE student_cursor;
+   END;
+   /
+ID: 1, Name: Ajay, Attendance: 85
+ID: 2, Name: Ramesh, Attendance: 90
+
+PL/SQL procedure successfully completed.
+
+SQL>  SET SERVEROUTPUT ON;
+SQL> DECLARE
+        CURSOR student_cursor IS
+            SELECT student_id, student_name, attendance
+            FROM N_RollCall
+            WHERE attendance >= 75;
+    BEGIN
+        FOR student_record IN student_cursor LOOP
+            DBMS_OUTPUT.PUT_LINE('ID: ' || student_record.student_id || ', Name: ' || student_record.student_name || ', Attendance: ' || student_record.attendance);
+        END LOOP;
+   END;
+   /
+ID: 1, Name: Ajay, Attendance: 85
+ID: 2, Name: Ramesh, Attendance: 90
+ID: 3, Name: Umesh, Attendance: 75
+ID: 4, Name: Ram, Attendance: 80
+
+PL/SQL procedure successfully completed.
+
+SQL> SET SERVEROUTPUT ON;
+SQL> DECLARE
+        -- Declare a cursor that takes student_id as a parameter
+        CURSOR merge_cursor(p_student_id NUMBER) IS
+            SELECT student_id, student_name, attendance
+            FROM O_RollCall
+            WHERE student_id = p_student_id;
+    
+        -- Variables to hold the fetched values
+        v_student_id O_RollCall.student_id%TYPE;
+       v_student_name O_RollCall.student_name%TYPE;
+       v_attendance O_RollCall.attendance%TYPE;
+       
+   BEGIN
+       -- Loop through each record in N_RollCall
+       FOR rec IN (SELECT student_id, student_name, attendance FROM N_RollCall) LOOP
+           -- Open the cursor with the current student_id from N_RollCall
+           OPEN merge_cursor(rec.student_id);
+           
+           -- Fetch the values into the declared variables
+           FETCH merge_cursor INTO v_student_id, v_student_name, v_attendance;
+           
+           -- Close the cursor after fetching
+           CLOSE merge_cursor;
+   
+           -- If no matching record is found in O_RollCall, insert it
+           IF v_student_id IS NULL THEN
+               INSERT INTO O_RollCall (student_id, student_name, attendance)
+               VALUES (rec.student_id, rec.student_name, rec.attendance);
+               DBMS_OUTPUT.PUT_LINE('Inserted: ' || rec.student_id || ' ' || rec.student_name);
+           ELSE
+               -- If a matching record exists, skip the insertion
+               DBMS_OUTPUT.PUT_LINE('Skipped: ' || rec.student_id || ' (Already exists)');
+           END IF;
+       END LOOP;
+   
+       -- Commit the changes
+       COMMIT;
+   END;
+   /
+Inserted: 1 Ajay
+Skipped: 2 (Already exists)
+Skipped: 3 (Already exists)
+Skipped: 4 (Already exists)
+
+PL/SQL procedure successfully completed.
+
+SQL> 
+SQL> SELECT * FROM O_RollCall;
+
+STUDENT_ID STUDENT_NAME                                       ATTENDANCE
+---------- -------------------------------------------------- ----------
+         2 Ramesh                                                     90
+         5 Sunil                                                      70
+         1 Ajay                                                       85
+
+SQL> 

@@ -1,0 +1,112 @@
+Microsoft Windows [Version 10.0.19045.5011]
+(c) Microsoft Corporation. All rights reserved.
+C:\Users\A>cd..
+C:\Users>cd..
+C:\>cd C:\Program Files\MongoDB\Server\5.0\bin
+C:\Program Files\MongoDB\Server\5.0\bin>mongo
+MongoDB shell version v5.0.29
+connecting to:
+mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb
+Implicit session: session { "id" :
+UUID("8bc74772-7207-4224-96ba-a5c2bb87546b") }
+MongoDB server version: 5.0.29
+================
+Warning: the "mongo" shell has been superseded by "mongosh",
+which delivers improved usability and compatibility.The "mongo" shell has
+been deprecated and will be removed in
+an upcoming release.
+For installation instructions, see
+https://docs.mongodb.com/mongodb-shell/install/
+================
+Welcome to the MongoDB shell.
+For interactive help, type "help".
+For more comprehensive documentation, see
+https://docs.mongodb.com/
+Questions? Try the MongoDB Developer Community Forums
+https://community.mongodb.com
+---
+The server generated these startup warnings when booting:
+2024-10-22T18:21:22.119+05:30: Access control is not enabled for
+the database. Read and write access to data and configuration is
+unrestricted
+---
+> use employee
+switched to db employee
+> db.createCollection("computer")
+{ "ok" : 1 }
+> db.computer.insertMany([{Name:"SDB", Designation:"HOD", Age:40,
+Salary:90000}, {Name:"SBN", Designation:"Asso Prof", Age:40, Salary:85000},
+{Name:"JSC", Designation:"Asso Prof", Age:30, Salary:75000}, {Name:"MSC",
+Designation:"Asso Prof", Age:42, Salary:75000}, {Name:"VND",
+Designation:"Asso Prof", Age:40, Salary:80000}, {Name:"VSK",
+Designation:"Asso Prof", Age:35, Salary:65000}])
+{
+"acknowledged" : true,
+"insertedIds" : [
+ObjectId("6717a255b716781f8334c0c0"),
+ObjectId("6717a255b716781f8334c0c1"),
+ObjectId("6717a255b716781f8334c0c2"),
+ObjectId("6717a255b716781f8334c0c3"),
+ObjectId("6717a255b716781f8334c0c4"),
+ObjectId("6717a255b716781f8334c0c5")
+]
+}
+> db.computer.find().pretty()
+{
+"_id" : ObjectId("6717a255b716781f8334c0c0"),
+"Name" : "SDB",
+"Designation" : "HOD",
+"Age" : 40,
+"Salary" : 90000
+}
+{
+"_id" : ObjectId("6717a255b716781f8334c0c1"),
+"Name" : "SBN",
+"Designation" : "Asso Prof",
+"Age" : 40,
+"Salary" : 85000
+}
+{
+"_id" : ObjectId("6717a255b716781f8334c0c2"),
+"Name" : "JSC",
+"Designation" : "Asso Prof",
+"Age" : 30,
+"Salary" : 75000
+}
+{
+"_id" : ObjectId("6717a255b716781f8334c0c3"),
+"Name" : "MSC",
+"Designation" : "Asso Prof",
+"Age" : 42,
+"Salary" : 75000
+}
+{
+"_id" : ObjectId("6717a255b716781f8334c0c4"),
+"Name" : "VND",
+"Designation" : "Asso Prof",
+"Age" : 40,
+"Salary" : 80000
+}
+{
+"_id" : ObjectId("6717a255b716781f8334c0c5"),
+"Name" : "VSK",
+"Designation" : "Asso Prof",
+"Age" : 35,
+"Salary" : 65000
+}
+> var mapFunction = function () {
+... emit("total", this.Salary);
+... };
+> var reduceFunction = function (key, values) {
+... return Array.sum(values);
+... };
+> db.computer.mapReduce(
+... mapFunction,
+... reduceFunction,
+... {
+... out: "TotalSalaryResult"
+... }
+... );
+{ "result" : "TotalSalaryResult", "ok" : 1 }
+> db.TotalSalaryResult.find().pretty();
+{ "_id" : "total", "value" : 470000 }

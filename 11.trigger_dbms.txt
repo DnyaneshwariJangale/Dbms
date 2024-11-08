@@ -1,0 +1,130 @@
+SQL*Plus: Release 18.0.0.0.0 - Production on Mon Oct 14 08:53:37 2024
+Version 18.4.0.0.0
+Copyright (c) 1982, 2018, Oracle. All rights reserved.
+Enter user-name: system
+Enter password:
+Last Successful login time: Tue Oct 01 2024 07:02:39 +05:30
+Connected to:
+Oracle Database 18c Express Edition Release 18.0.0.0.0 - Production
+Version 18.4.0.0.0
+SQL> create table Library(book_id int, book_name varchar(20), book_price int);
+Table created.
+SQL> desc Library;
+Name Null? Type
+----------------------------------------- -------- ----------------------------
+BOOK_ID NUMBER(38)
+BOOK_NAME VARCHAR2(20)
+BOOK_PRICE NUMBER(38)
+SQL> create table Library_Audit(book_id int, book_name varchar(20), book_price int,
+audit_change varchar(10), update_time date);
+Table created.
+SQL> desc Library_Audit;
+Name Null? Type
+----------------------------------------- -------- ----------------------------
+BOOK_ID NUMBER(38)
+BOOK_NAME VARCHAR2(20)
+BOOK_PRICE NUMBER(38)
+AUDIT_CHANGE VARCHAR2(10)
+UPDATE_TIME DATE
+SQL> insert into Library values(1, 'Book1', 225);
+1 row created.
+SQL> insert into Library values(2, 'Book2', 345);
+1 row created.
+SQL> insert into Library values(3, 'Book3', 1015);
+1 row created.
+SQL> insert into Library values(4, 'Book4', 553);
+1 row created.
+SQL> COMMIT;
+Commit complete.
+SQL> select * from library;
+BOOK_ID BOOK_NAME BOOK_PRICE
+---------- -------------------- ----------
+1 Book1 225
+2 Book2 345
+3 Book3 1015
+4 Book4 553
+SQL> edit trig1.sql;
+create or replace trigger trig1 after delete or update on Library for each row
+declare
+auch varchar(15);
+begin
+if deleting then
+auch := 'delete';
+end if;
+if updating then
+auch := 'update';
+end if;
+insert into Library_Audit values(:old.book_id, :old.book_name, :old.book_price,
+auch, current_timestamp);
+end;
+/
+SQL> @trig1.sql
+Trigger created.
+SQL> update Library
+2 set book_name = 'Python Programming' where book_id = 4;
+1 row updated.
+SQL> select * from Library_Audit;
+BOOK_ID BOOK_NAME BOOK_PRICE AUDIT_CHAN UPDATE_TI
+---------- -------------------- ---------- ---------- ---------
+4 Book4 553 update 14-OCT-24
+SQL> select * from Library;
+BOOK_ID BOOK_NAME BOOK_PRICE
+---------- -------------------- ----------
+1 Book1 225
+2 Book2 345
+3 Book3 1015
+4 Python Programming 553
+SQL> delete from Library where book_id = 1;
+1 row deleted.
+SQL> select * from Library_Audit;
+BOOK_ID BOOK_NAME BOOK_PRICE AUDIT_CHAN UPDATE_TI
+---------- -------------------- ---------- ---------- ---------
+4 Book4 553 update 14-OCT-24
+1 Book1 225 delete 14-OCT-24
+SQL> create table Audit_Change1 (book_id int, aud_change varchar(10), update_time
+timestamp);
+Table created.
+SQL> desc Audit_Change1
+Name Null? Type
+----------------------------------------- -------- ----------------------------
+BOOK_ID NUMBER(38)
+AUD_CHANGE VARCHAR2(10)
+UPDATE_TIME TIMESTAMP(6)
+SQL> edit trig2.sql
+create or replace trigger trig2 before delete or update on Library
+declare
+auch varchar(15);
+begin
+if deleting then
+auch := 'delete';
+end if;
+if updating then
+auch := 'update';
+end if;
+insert into Audit_Change1 values(s1.nextval, auch, current_timestamp);
+end;
+/
+SQL> @trig2.sql
+Trigger created.
+SQL> update Library
+2 set book_name = 'KORTH' where book_id = 2;
+1 row updated.
+SQL> select * from Library_Audit;
+BOOK_ID BOOK_NAME BOOK_PRICE AUDIT_CHAN UPDATE_TI
+---------- -------------------- ---------- ---------- ---------
+4 Book4 553 update 14-OCT-24
+1 Book1 225 delete 14-OCT-24
+2 Book2 345 update 14-OCT-24
+SQL> select * from Audit_Change1;
+BOOK_ID AUD_CHANGE
+---------- ----------
+UPDATE_TIME
+---------------------------------------------------------------------------
+1 update
+14-OCT-24 09.27.29.944000 AM
+SQL> select * from Library;
+BOOK_ID BOOK_NAME BOOK_PRICE
+---------- -------------------- ----------
+2 KORTH 345
+3 Book3 1015
+4 Python Programming 553

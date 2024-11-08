@@ -1,0 +1,351 @@
+Microsoft Windows [Version 10.0.15063]
+(c) 2017 Microsoft Corporation. All rights reserved.
+C:\Users\SERVERROOM>cd..
+C:\Users>cd..
+C:\>cd C:\Program Files\MongoDB\Server\5.0\bin
+C:\Program Files\MongoDB\Server\5.0\bin>mongo
+MongoDB shell version v5.0.29
+connecting to:
+mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceNa
+me=mongodb
+Implicit session: session { "id" :
+UUID("b254bb29-d575-452a-9f85-3b958fd2136e") }
+MongoDB server version: 5.0.29
+================
+Warning: the "mongo" shell has been superseded by "mongosh",
+which delivers improved usability and compatibility.The "mongo" shell
+has been deprecated and will be removed in
+an upcoming release.
+For installation instructions, see
+https://docs.mongodb.com/mongodb-shell/install/
+================
+Welcome to the MongoDB shell.
+For interactive help, type "help".
+For more comprehensive documentation, see
+https://docs.mongodb.com/
+Questions? Try the MongoDB Developer Community Forums
+https://community.mongodb.com
+---
+The server generated these startup warnings when booting:
+2024-10-20T20:34:58.777-07:00: Access control is not enabled
+for the database. Read and write access to data and configuration is
+unrestricted
+---
+> use Employee
+switched to db Employee
+> db.createCollection("empl")
+{ "ok" : 1 }
+> db.empl.insertMany([{eno:101, ename:"Chetan", address:"Vadgaon",
+sal:150000}, {eno:102, ename:"Aradhya", address:"Talegaon",
+sal:140000}, {eno:103, ename:"Prathamesh", address:"Akurdi",
+sal:110000}, {eno:104, ename:"Adarsh", address:"Chinchwad",
+sal:100000}, {eno:105, ename:"Jatin", address:"Pimpri", sal:115000}])
+{
+"acknowledged" : true,
+"insertedIds" : [
+ObjectId("6715d5f5bd2d11f6c33a0f67"),
+ObjectId("6715d5f5bd2d11f6c33a0f68"),
+ObjectId("6715d5f5bd2d11f6c33a0f69"),
+ObjectId("6715d5f5bd2d11f6c33a0f6a"),
+ObjectId("6715d5f5bd2d11f6c33a0f6b")
+]
+}
+> db.empl.find().pretty()
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f67"),
+"eno" : 101,
+"ename" : "Chetan",
+"address" : "Vadgaon",
+"sal" : 150000
+}
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f68"),
+"eno" : 102,
+"ename" : "Aradhya",
+"address" : "Talegaon",
+"sal" : 140000
+}
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f69"),
+"eno" : 103,
+"ename" : "Prathamesh",
+"address" : "Akurdi",
+"sal" : 110000
+}
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f6a"),
+"eno" : 104,
+"ename" : "Adarsh",
+"address" : "Chinchwad",
+"sal" : 100000
+}
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f6b"),
+"eno" : 105,
+"ename" : "Jatin",
+"address" : "Pimpri",
+"sal" : 115000
+}
+> db.empl.insertOne({_id:2423, eno:106, ename:"Nishant",
+address:"Jalgaon", sal:520000})
+{ "acknowledged" : true, "insertedId" : 2423 }
+> db.empl.find().pretty()
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f67"),
+"eno" : 101,
+"ename" : "Chetan",
+"address" : "Vadgaon",
+"sal" : 150000
+}
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f68"),
+"eno" : 102,
+"ename" : "Aradhya",
+"address" : "Talegaon",
+"sal" : 140000
+}
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f69"),
+"eno" : 103,
+"ename" : "Prathamesh",
+"address" : "Akurdi",
+"sal" : 110000
+}
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f6a"),
+"eno" : 104,
+"ename" : "Adarsh",
+"address" : "Chinchwad",
+"sal" : 100000
+}
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f6b"),
+"eno" : 105,
+"ename" : "Jatin",
+"address" : "Pimpri",
+"sal" : 115000
+}
+{
+"_id" : 2423,
+"eno" : 106,
+"ename" : "Nishant",
+"address" : "Jalgaon",
+"sal" : 520000
+}
+> db.empl.find({sal: {"$gt" : 120000}}).pretty()
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f67"),
+"eno" : 101,
+"ename" : "Chetan",
+"address" : "Vadgaon",
+"sal" : 150000
+}
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f68"),
+"eno" : 102,
+"ename" : "Aradhya",
+"address" : "Talegaon",
+"sal" : 140000
+}
+{
+"_id" : 2423,
+"eno" : 106,
+"ename" : "Nishant",
+"address" : "Jalgaon",
+"sal" : 520000
+}
+> db.empl.find({sal: {"$lt" : 150000}}).pretty()
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f68"),
+"eno" : 102,
+"ename" : "Aradhya",
+"address" : "Talegaon",
+"sal" : 140000
+}
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f69"),
+"eno" : 103,
+"ename" : "Prathamesh",
+"address" : "Akurdi",
+"sal" : 110000
+}
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f6a"),
+"eno" : 104,
+"ename" : "Adarsh",
+"address" : "Chinchwad",
+"sal" : 100000
+}
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f6b"),
+"eno" : 105,
+"ename" : "Jatin",
+"address" : "Pimpri",
+"sal" : 115000
+}
+> db.empl.find({sal: {"$gt" : 110000, "$lt" : 200000}}).pretty()
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f67"),
+"eno" : 101,
+"ename" : "Chetan",
+"address" : "Vadgaon",
+"sal" : 150000
+}
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f68"),
+"eno" : 102,
+"ename" : "Aradhya",
+"address" : "Talegaon",
+"sal" : 140000
+}
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f6b"),
+"eno" : 105,
+"ename" : "Jatin",
+"address" : "Pimpri",
+"sal" : 115000
+}
+> db.empl.updateMany({},{$mul: {sal: 1.1}})
+{ "acknowledged" : true, "matchedCount" : 6, "modifiedCount" : 6 }
+> db.empl.find().pretty()
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f67"),
+"eno" : 101,
+"ename" : "Chetan",
+"address" : "Vadgaon",
+"sal" : 165000
+}
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f68"),
+"eno" : 102,
+"ename" : "Aradhya",
+"address" : "Talegaon",
+"sal" : 169400
+}
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f69"),
+"eno" : 103,
+"ename" : "Prathamesh",
+"address" : "Akurdi",
+"sal" : 121000.00000000001
+}
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f6a"),
+"eno" : 104,
+"ename" : "Adarsh",
+"address" : "Chinchwad",
+"sal" : 110000.00000000001
+}
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f6b"),
+"eno" : 105,
+"ename" : "Jatin",
+"address" : "Pimpri",
+"sal" : 126500.00000000001
+}
+{
+"_id" : 2423,
+"eno" : 106,
+"ename" : "Nishant",
+"address" : "Jalgaon",
+"sal" : 572000
+}
+> db.empl.deleteOne({"sal": {"$lt" : 135000}})
+{ "acknowledged" : true, "deletedCount" : 1 }
+> db.empl.find().pretty()
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f67"),
+"eno" : 101,
+"ename" : "Chetan",
+"address" : "Vadgaon",
+"sal" : 165000
+}
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f68"),
+"eno" : 102,
+"ename" : "Aradhya",
+"address" : "Talegaon",
+"sal" : 169400
+}
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f6b"),
+"eno" : 105,
+"ename" : "Jatin",
+"address" : "Pimpri",
+"sal" : 126500.00000000001
+}
+{
+"_id" : 2423,
+"eno" : 106,
+"ename" : "Nishant",
+"address" : "Jalgaon",
+"sal" : 572000
+}
+> db.empl.deleteMany({"sal": {"$lt" : 135000}})
+{ "acknowledged" : true, "deletedCount" : 1 }
+> db.empl.find().pretty()
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f67"),
+"eno" : 101,
+"ename" : "Chetan",
+"address" : "Vadgaon",
+"sal" : 165000
+}
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f68"),
+"eno" : 102,
+"ename" : "Aradhya",
+"address" : "Talegaon",
+"sal" : 169400
+}
+{
+"_id" : 2423,
+"eno" : 106,
+"ename" : "Nishant",
+"address" : "Jalgaon",
+"sal" : 572000
+}
+> db.empl.renameCollection("employee1")
+{ "ok" : 1 }
+> db.employee1.find({ename:/^N/}).pretty();
+{
+"_id" : 2423,
+"eno" : 106,
+"ename" : "Nishant",
+"address" : "Jalgaon",
+"sal" : 572000
+}
+> db.employee1.find().sort({ename:1}).pretty()
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f68"),
+"eno" : 102,
+"ename" : "Aradhya",
+"address" : "Talegaon",
+"sal" : 169400
+}
+{
+"_id" : ObjectId("6715d5f5bd2d11f6c33a0f67"),
+"eno" : 101,
+"ename" : "Chetan",
+"address" : "Vadgaon",
+"sal" : 165000
+}
+{
+"_id" : 2423,
+"eno" : 106,
+"ename" : "Nishant",
+"address" : "Jalgaon",
+"sal" : 572000
+}
+> use Employee1
+switched to db Employee1
+> db.dropDatabase()
+{ "ok" : 1 }
+> db.empl.insertOne({eno: 107, ename:"Onkar", address:"Pune",
+sal:134000})
+{
+"acknowledged" : true,
+"insertedId" : ObjectId("6715e285e65c1a52120f882c")
+}
+> db.empl.drop()
+true

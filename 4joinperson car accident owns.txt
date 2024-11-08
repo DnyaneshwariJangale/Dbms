@@ -1,0 +1,98 @@
+-- Create person table
+CREATE TABLE person (
+    driver_id INT PRIMARY KEY,
+    name VARCHAR(100) UNIQUE,
+    address VARCHAR(255) NOT NULL
+);
+
+-- Create car table
+CREATE TABLE car (
+    license VARCHAR(20) PRIMARY KEY,
+    model VARCHAR(50),
+    year INT
+);
+
+-- Create accident table
+CREATE TABLE accident (
+    report_number INT PRIMARY KEY,
+    rep_Date DATE,
+    location VARCHAR(255)
+);
+
+-- Create owns table (many-to-many relationship between person and car)
+CREATE TABLE owns (
+    driver_id INT,
+    license VARCHAR(20),
+    PRIMARY KEY (driver_id, license),
+    FOREIGN KEY (driver_id) REFERENCES person(driver_id),
+    FOREIGN KEY (license) REFERENCES car(license)
+);
+
+-- Create participated table (many-to-many relationship between accident and car/driver)
+CREATE TABLE participated (
+    report_number INT,
+    license VARCHAR(20),
+    driver_id INT,
+    damage_amount DECIMAL(10, 2),
+    PRIMARY KEY (report_number, license, driver_id),
+    FOREIGN KEY (report_number) REFERENCES accident(report_number),
+    FOREIGN KEY (license) REFERENCES car(license),
+    FOREIGN KEY (driver_id) REFERENCES person(driver_id)
+);
+-- Insert records into person table
+INSERT INTO person (driver_id, name, address) VALUES
+
+(1, 'John Smith','123 pat Street') ,
+(2, 'Alice Brown', '456 Oak Street'),
+(3, 'Michael White', '789 Pine Street'),
+(4, 'Sophia Green', '101 Maple Street'),
+(5, 'David Blue', '202 Birch Street') ;
+
+-- Insert records into car table
+INSERT INTO car (license, model, year) VALUES
+('ABC123', 'Mazda', 2008),
+('XYZ456', 'Toyota', 2009),
+('LMN789', 'Honda', 2007),
+('DEF101', 'Ford', 2010),
+('GHI112', 'Chevrolet', 2011);
+
+-- Insert records into accident table
+INSERT INTO accident (report_number, date, location) VALUES
+(1, '2009-05-12', 'New York'),
+(2, '2010-03-23', 'Los Angeles'),
+(3, '2009-08-17', 'Chicago'),
+(4, '2011-01-14', 'Houston'),
+(5, '2009-11-29', 'Miami');
+
+-- Insert records into owns table
+INSERT INTO owns (driver_id, license) VALUES
+(1, 'ABC123'),
+(2, 'XYZ456'),
+(3, 'LMN789'),
+(4, 'DEF101'),
+(5, 'GHI112');
+
+-- Insert records into participated table
+INSERT INTO participated (report_number, license, driver_id, damage_amount) VALUES
+(1, 'ABC123', 1, 1500.00),
+(2, 'XYZ456', 2, 1000.00),
+(3, 'LMN789', 3, 2000.00),
+(4, 'DEF101', 4, 500.00),
+(5, 'GHI112', 5, 1200.00);
+-- Already added UNIQUE constraint during table creation
+-- If needed, you can alter the table to add the constraint:
+ALTER TABLE person ADD CONSTRAINT unique_name UNIQUE (name);
+-- Already added NOT NULL constraint during table creation
+-- If needed, you can alter the table to add the constraint:
+ALTER TABLE person MODIFY address VARCHAR(255) NOT NULL;
+SELECT COUNT(DISTINCT o.driver_id) AS total_people_involved
+FROM owns o
+JOIN participated p ON o.license = p.license
+JOIN accident a ON p.report_number = a.report_number
+WHERE a.date BETWEEN '2009-01-01' AND '2009-12-31';
+INSERT INTO accident (report_number, date, location)
+VALUES (6, '2024-10-15', 'San Francisco');
+-- Find the license of Mazda owned by John Smith
+DELETE FROM owns
+WHERE driver_id = (SELECT driver_id FROM person WHERE name = 'John Smith')
+AND license = 'ABC123';

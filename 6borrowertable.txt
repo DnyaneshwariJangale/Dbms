@@ -1,0 +1,96 @@
+SQL> Create table Borrower(Roll number, SName Varchar2(10), DateofIssue date,
+   BookName Varchar2(15), Status varchar2(1));
+
+Table created.
+
+SQL> Create table Fine(Roll number, CurrentDate date, Amt number);
+
+Table created.
+
+SQL> Insert into borrower values(&ROLL,'&SNAME','&DATEOFISSUE','&BOOKNAME','&STATUS');
+Enter value for roll: 1
+Enter value for sname: ajay
+Enter value for dateofissue: 09-jun-17
+Enter value for bookname: book1
+Enter value for status: i
+old   1: Insert into borrower values(&ROLL,'&SNAME','&DATEOFISSUE','&BOOKNAME','&STATUS')
+new   1: Insert into borrower values(1,'ajay','09-jun-17','book1','i')
+
+1 row created.
+
+SQL> /
+Enter value for roll: 2
+Enter value for sname: vijay
+Enter value for dateofissue: 23-nov-18
+Enter value for bookname: book2
+Enter value for status: i
+old   1: Insert into borrower values(&ROLL,'&SNAME','&DATEOFISSUE','&BOOKNAME','&STATUS')
+new   1: Insert into borrower values(2,'vijay','23-nov-18','book2','i')
+
+1 row created.
+
+SQL> /
+Enter value for roll: 2
+Enter value for sname: vishal
+Enter value for dateofissue: 30-dec-19
+Enter value for bookname: book3
+Enter value for status: i
+old   1: Insert into borrower values(&ROLL,'&SNAME','&DATEOFISSUE','&BOOKNAME','&STATUS')
+new   1: Insert into borrower values(2,'vishal','30-dec-19','book3','i')
+
+1 row created.
+
+SQL>  select * from fine;
+
+no rows selected
+
+SQL>  edit cur.sql
+
+SQL> declare
+  2  e1 exception;
+  3  rollno Borrower.Roll%TYPE;
+  4  bname Borrower.BooKName%TYPE;
+  5  B_Issuse_Date date;
+  6  Days number(4);
+  7  fine_amt number(10);
+  8  begin
+  9  rollno:=&rollno;
+ 10  bname:='&bname';
+ 11  if(SQL%notfound) then
+ 12  raise e1;
+ 13  end if;
+ 14  Select DateofIssue into B_Issuse_Date from Borrower where Roll = rollno and
+ 15  BookName = bname;
+ 16  Days := SYSDATE - B_Issuse_Date;
+ 17  DBMS_OUTPUT.PUT_LINE ('Total Days :'||Days);
+ 18  if(Days<=15)then
+ 19  fine_amt:=0;
+ 20  DBMS_OUTPUT.PUT_LINE ('No fine...........');
+ 21  elsif (Days between 16 and 30)then
+ 22  fine_amt:=(days-15)*5;
+ 23  insert into Fine values(rollno, SYSDATE, fine_amt);
+ 24  else
+ 25  fine_amt:=(Days-30)*50+(15*5);
+ 26  insert into Fine values(rollno,SYSDATE,fine_amt);
+ 27  end if;
+ 28  UPDATE Borrower SET Status = 'R' WHERE Roll=rollno;
+ 29  exception
+ 30  when e1 then
+ 31  DBMS_OUTPUT.PUT_LINE('not found');
+ 32  end;
+ 33  /
+Enter value for rollno: 1
+old   9: rollno:=&rollno;
+new   9: rollno:=1;
+Enter value for bname: book1
+old  10: bname:='&bname';
+new  10: bname:='book1';
+
+PL/SQL procedure successfully completed.
+
+SQL> select * from fine;
+
+      ROLL CURRENTDA        AMT
+---------- --------- ----------
+         1 07-NOV-24     134025
+
